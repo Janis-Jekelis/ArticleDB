@@ -1,0 +1,12 @@
+{
+    "name": "inerce/article-db",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "twig/twig": "^3.0",
+        "nikic/fast-route": "^1.3"
+    }
+}
