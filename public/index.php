@@ -1,7 +1,12 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__."/../vendor/autoload.php";
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
+$loader = new FilesystemLoader(__DIR__ . "/../public/Views");
+$twig = new Environment($loader);
+echo $twig->render("create.twig", /*(new MainController())->index()*/);
 /*
 $dsn= "mysql:host=localhost;port=3306; dbname=ArticleDB; user=root; password=pass; charset=utf8mb4;";
 $pdo=new PDO($dsn);
@@ -25,7 +30,7 @@ var_dump($posts);
 
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/users', 'get_all_users_handler');
+    $r->addRoute('POST', '/article/create', 'get_all_users_handler');
     $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');
 
 });
@@ -51,6 +56,9 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
+
+            (new \App\Controllers\ArticleController())->create($_POST["title"],$_POST["content"]);
+
         // ... call $handler with $vars
         break;
 }
