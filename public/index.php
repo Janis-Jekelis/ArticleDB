@@ -1,37 +1,20 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__."/../vendor/autoload.php";
+require_once __DIR__ . "/../vendor/autoload.php";
+
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-
+use App\Controllers\ArticleController;
 $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
-echo $twig->render("create.twig", /*(new MainController())->index()*/);
-/*
-$dsn= "mysql:host=localhost;port=3306; dbname=ArticleDB; user=root; password=pass; charset=utf8mb4;";
-$pdo=new PDO($dsn);
 
-$sql = "DELETE FROM Articles
-  WHERE id = 3";
-
-
-
-$pdo->query($sql);
-$statement=$pdo->prepare("select * from Articles");
-
-$statement->execute();
-$posts=$statement->fetchAll(PDO::FETCH_ASSOC);
-foreach ($posts as $id){
-    echo $id["id"];
-}
-
-var_dump($posts);
-*/
-
-
-$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->addRoute('POST', '/article/create', 'get_all_users_handler');
-    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');
+$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
+    $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "create"]);
+    $r->addRoute('GET', "/", ["App\Controllers\ArticleController", "index"]);
+    $r->addRoute('POST', "/", ["App\Controllers\ArticleController", "index"]);
+    $r->addRoute('GET', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
+    $r->addRoute('POST', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
 
 });
 
@@ -56,9 +39,23 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
+        [$class, $method] = [$handler[0], $handler[1]];
 
-            (new \App\Controllers\ArticleController())->create($_POST["title"],$_POST["content"]);
+        if ($method == "show") {
+            echo $twig->render($method . ".twig", (new $class)->$method((int)($vars["id"])));
 
-        // ... call $handler with $vars
+        }
+        if ($method == "index") {
+            echo $twig->render($method . ".twig", (new $class)->$method());
+            if($httpMethod == "POST") {
+                (new $class)->delete((int)$_POST["delete"]);
+                header("Refresh: 0");
+            }
+        }
+
+        if ($method == "create") {
+            echo $twig->render($method . ".twig");
+            if ($httpMethod == "POST") (new $class)->$method($_POST["title"], $_POST["content"]);
+        }
         break;
 }

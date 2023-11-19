@@ -8,12 +8,19 @@
     <title>Document</title>
 </head>
 <body>
-
 {% for article in articles %}
-<a href="/article/{{ article.getId()}}">{{ article.getTitle() }} {{ article.getDescription() }} </a>
-   <br>
-{% endfor %}
+    {{ article.getTitle }}
+    <br>
+    {{ article.getDescription }}
 
+    <form action="/" method="POST">
+        <input type="hidden" name="delete" value="{{ article.getId() }}">
+        <button type="submit" >Delete</button>
+
+    </form>
+
+{% endfor %}
 
 </body>
 </html>
+

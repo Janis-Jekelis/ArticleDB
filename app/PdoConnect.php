@@ -8,7 +8,9 @@ class PdoConnect
 
     public static function pdoConnect():PDO
     {
-        $dsn=http_build_query(require_once(__DIR__."/../pdoConfig.php"),"",";");
+        $dsn=rawurldecode(http_build_query(
+            require(__DIR__."/../pdoConfig.php"),"",";"
+        ));
         return new PDO($dsn);
     }
 
