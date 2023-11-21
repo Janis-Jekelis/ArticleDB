@@ -2,22 +2,24 @@
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use App\Controllers\ArticleController;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use App\Controllers\ArticleController;
+session_start();
 $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
-
+$twig->addGlobal("flush",["success"=>$_SESSION["flush"]]);
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
-    $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "create"]);
+    $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "store"]);
+
     $r->addRoute('GET', "/", ["App\Controllers\ArticleController", "index"]);
     $r->addRoute('POST', "/", ["App\Controllers\ArticleController", "index"]);
+
     $r->addRoute('GET', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
     $r->addRoute('POST', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
 
 });
-
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
@@ -43,7 +45,7 @@ switch ($routeInfo[0]) {
 
         if ($method == "show") {
             echo $twig->render($method . ".twig", (new $class)->$method((int)($vars["id"])));
-
+            unset($_SESSION["flush"]);
         }
         if ($method == "index") {
             echo $twig->render($method . ".twig", (new $class)->$method());
@@ -54,8 +56,11 @@ switch ($routeInfo[0]) {
         }
 
         if ($method == "create") {
-            echo $twig->render($method . ".twig");
-            if ($httpMethod == "POST") (new $class)->$method($_POST["title"], $_POST["content"]);
+            (new ArticleController())->create($twig,$method);
         }
+        if ($method == "store") {
+            (new $class)->$method($_POST["title"], $_POST["content"]);
+        }
+
         break;
 }
