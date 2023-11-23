@@ -2,22 +2,26 @@
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use App\RedirectResponse;
+use App\Response;
 use App\Controllers\ArticleController;
+use App\ViewResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 session_start();
 $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
-$twig->addGlobal("flush",["success"=>$_SESSION["flush"]]);
+if(isset($_SESSION["flush"]))$twig->addGlobal("flush",["success"=>$_SESSION["flush"]]);
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
     $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "store"]);
 
     $r->addRoute('GET', "/", ["App\Controllers\ArticleController", "index"]);
-    $r->addRoute('POST', "/", ["App\Controllers\ArticleController", "index"]);
 
     $r->addRoute('GET', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
-    $r->addRoute('POST', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
+    $r->addRoute('POST', '/article/{id:\d+}/delete', ["App\Controllers\ArticleController", "delete"]);
+    $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
+    $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
 
 });
 
@@ -41,26 +45,20 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
-        [$class, $method] = [$handler[0], $handler[1]];
+        [$class, $method] = $handler;
+        $intVars = [];
+        foreach ($vars as $key => $value) {
+            $intVars[$key] = (int)$value;
+        }
+        $response = (new $class)->{$method}(...array_values($intVars));
 
-        if ($method == "show") {
-            echo $twig->render($method . ".twig", (new $class)->$method((int)($vars["id"])));
-            unset($_SESSION["flush"]);
+        switch (true){
+            case $response instanceof ViewResponse:
+                echo $twig->render($response->getViewName() . ".twig", $response->getData());
+                break;
+                case $response instanceof RedirectResponse:
+                    header("Location: {$response->getLocation()}");
         }
-        if ($method == "index") {
-            echo $twig->render($method . ".twig", (new $class)->$method());
-            if($httpMethod == "POST") {
-                (new $class)->delete((int)$_POST["delete"]);
-                header("Refresh: 0");
-            }
-        }
-
-        if ($method == "create") {
-            (new ArticleController())->create($twig,$method);
-        }
-        if ($method == "store") {
-            (new $class)->$method($_POST["title"], $_POST["content"]);
-        }
-
+        if($method=="show" && isset($_SESSION["flush"]))unset($_SESSION["flush"]);
         break;
 }

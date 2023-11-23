@@ -1,65 +1,84 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Controllers;
+
 use App\Models\Article;
+use App\RedirectResponse;
+use App\Response;
+use App\ViewResponse;
 use Doctrine\DBAL\DriverManager;
+
 class ArticleController
 {
     private object $conn;
+
     public function __construct()
     {
-        $this->conn = DriverManager::getConnection(require __DIR__."/../../dbalConfig.php");
+        $this->conn = DriverManager::getConnection(require __DIR__ . "/../../dbalConfig.php");
     }
 
-    public function index():array
+    public function index(): Response
     {
-        $articles=[];
-        $statement=$this->conn->prepare("select * from Articles");
-        $result=$statement->executeQuery();
-        $posts=$result->fetchAllAssociative();
-        foreach ($posts as $article){
-            $articles[]=new Article($article["Title"],$article["Description"],(int)$article["id"]);
+        $articles = [];
+        $statement = $this->conn->prepare("select * from Articles");
+        $result = $statement->executeQuery();
+        $posts = $result->fetchAllAssociative();
+        foreach ($posts as $article) {
+            $articles[] = new Article($article["Title"], $article["Description"], (int)$article["id"]);
         }
-        return ["articles"=>$articles];
+        return new ViewResponse("index", ["articles" => $articles]);
 
     }
-    public function create(object $twig, string $method ):void
-    {
-        echo $twig->render($method . ".twig");
-    }
-    public function store($title, $description):void
-    {
 
-         if($title!=null && $description!=null) {
-             $article=new Article($title,$description);
-
-            $this->conn->insert(
-                'Articles',
-                [
-                    'Title'=>$article->getTitle(),
-                    'Description'=>$article->getDescription()
-                ]
-            );
-            $article->setId((int)$this->conn->lastInsertId());
-            $_SESSION["flush"]="Article created";
-            header("Location: http://{$_SERVER["HTTP_HOST"]}/article/{$article->getId()}");
-
-        }
-    }
-    public function show(int $articleId):array
+    public function create(): Response
     {
-        $articles=[];
-        $statement=$this->conn->prepare("select * from Articles WHERE id = ?");
-        $statement->bindValue(1, $articleId);
-        $result=$statement->executeQuery();
-        $posts=$result->fetchAllAssociative();
-        foreach ($posts as $article){
-            $articles[]=new Article($article["Title"],$article["Description"],(int)$article["id"]);
-        }
-        return ["articles"=>$articles];
+        return new ViewResponse("create");
     }
-    public function delete(int $id)
+
+    public function store(): Response
     {
-        $this->conn->delete('Articles',['id'=>$id]);
+        $article = new Article($_POST['title'], $_POST['content']);
+        $queryBuilder = $this->conn->createQueryBuilder();
+        $queryBuilder
+            ->insert('Articles')
+            ->values([
+                'Title' => ':title',
+                'Description' => ':description'
+            ])
+            ->setParameters([
+                'title' => $article->getTitle(),
+                'description' => $article->getDescription()
+            ])
+            ->executeQuery();
+        $article->setId((int)$this->conn->lastInsertId());
+        $_SESSION["flush"] = "Article created";
+        return new RedirectResponse("/article/{$article->getId()}");
+    }
+
+    public function show(int $articleId ): Response
+    {
+        $statement = $this->conn->prepare("select * from Articles WHERE id = :id");
+        $statement->bindValue('id', $articleId);
+        $result = $statement->executeQuery();
+        $posts = $result->fetchAssociative();
+        $article = new Article($posts["Title"], $posts["Description"], (int)$posts["id"]);
+                return (new ViewResponse("show", ["article" => $article]));
+
+    }
+    public function edit(int $id):Response
+    {
+        $statement = $this->conn->prepare("select * from Articles WHERE id = :id");
+        $statement->bindValue('id', $id);
+        $result = $statement->executeQuery();
+        $posts = $result->fetchAssociative();
+        $article = new Article($posts["Title"], $posts["Description"], (int)$posts["id"]);
+        return (new ViewResponse("edit", ["article" => $article]));
+    }
+
+    public function delete(int $id):RedirectResponse
+    {
+        $this->conn->delete('Articles', ['id' =>$id]);
+        return new RedirectResponse("/");
     }
 }
