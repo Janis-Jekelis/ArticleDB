@@ -12,7 +12,7 @@
 {{ article.getTitle }}
 <br>
 {{ article.getDescription }}
-
+{{ article.getCreatedAt}}
     <form action="/article/{{ article.getId() }}/delete" method="POST" onsubmit="return confirmDelete()">
         <input type="hidden" name="delete" value="{{ article.getId() }}">
         <button type="submit" >Delete</button>
@@ -20,6 +20,7 @@
 <button>
     <a href="/article/{{ article.getId() }}/edit" style="text-decoration: none; color:inherit">edit</a>
 </button>
+<img src="{{article.getpicture }}">
 <script>
     function confirmDelete() {
         return confirm("Are you sure you want to delete this article?");

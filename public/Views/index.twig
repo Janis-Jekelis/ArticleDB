@@ -10,8 +10,12 @@
 <body>
 
 {% for article in articles %}
-<a href="/article/{{ article.getId()}}">{{ article.getTitle() }} {{ article.getDescription() }} </a>
-   <br>
+    <img src="{{article.getpicture  }}">
+<a href="/article/{{ article.getId()}}">{{ article.getTitle() }} <br>{{ article.getDescription() }} </a>
+       <br>
+    {{ article.getCreatedAt()}}
+    {{ article.getEditedAt}}
+    <br>
 {% endfor %}
 
 

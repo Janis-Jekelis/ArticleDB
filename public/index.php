@@ -1,10 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
-
 use App\RedirectResponse;
-use App\Response;
-use App\Controllers\ArticleController;
 use App\ViewResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -21,7 +18,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/article/{id:\d+}', ["App\Controllers\ArticleController", "show"]);
     $r->addRoute('POST', '/article/{id:\d+}/delete', ["App\Controllers\ArticleController", "delete"]);
     $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
-    $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
+    $r->addRoute('POST', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "update"]);
 
 });
 
