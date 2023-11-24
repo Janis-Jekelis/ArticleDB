@@ -9,46 +9,45 @@
     <link rel="stylesheet" href="/Views/css/bootstrap.css"/>
 </head>
 <body class="bg-body-secondary">
-{{ flush.success }}
+{%include "header.twig" %}
 <div class="row justify-content-center mt-5">
-    <div class="col col-3 ">
-        <div class="card bg-body-secondary container">
-            <img class="card-img" src="{{article.getpicture }}">
-              <h5 class="card-title text-center h2">{{ article.getTitle }}</h5>
-            <p class="card-text ms-1 me-1">{{ article.getDescription }}</p>
+        <div class="card bg-body-secondary  col-3 ">
+            <img class="card-img" src="{{ article.getpicture }}">
+            <h5 class="card-title text-center h2">{{ article.getTitle }}</h5>
+            <p class="card-text ms-1 me-1">{{ article.getDescription|nl2br }}</p>
             <div class="card-footer row ">
-                <span class=" col text-bg-dark" style="font-size:10px">Created at: {{ article.getCreatedAt}}</span >
+                <span class=" col text-bg-dark" style="font-size:10px">Created at: {{ article.getCreatedAt }}</span>
                 {% if article.getEditedAt!=null %}
-                    <span class="col text-bg-dark align-items-end" style="font-size: 10px" >Edited at: {{ article.getEditedAt }}</span>
+                    <span class="col text-bg-dark align-items-end"
+                          style="font-size: 10px">Edited at: {{ article.getEditedAt }}</span>
                 {% endif %}
             </div>
-            <div class="row justify-content-evenly">
+            <div class=" row ">
+                <form class="col"
+                      action="/article/{{ article.getId() }}/delete"
+                      method="POST"
+                      onsubmit="return confirmDelete()">
+                    <input type="hidden" name="delete" value="{{ article.getId() }}">
+                    <button class="btn btn-danger" type="submit">&#x2717;</button>
+                </form>
+                <div class="col text-end">
+                    <button class="btn btn-primary">
+                        <a href="/article/{{ article.getId() }}/edit"
+                           style="text-decoration: none; color:inherit; font-size:12px ;width: 20px">
+                            &#x270F; edit
+                        </a>
+                    </button>
 
-    <form class="col"
-          action="/article/{{ article.getId() }}/delete"
-          method="POST"
-          onsubmit="return confirmDelete()">
-        <input type="hidden" name="delete" value="{{ article.getId() }}">
-        <button class="btn btn-danger"  type="submit">&#x2717;</button>
-    </form>
 
-<button class="col btn btn-primary ">
-    <a  href="/article/{{ article.getId() }}/edit"
-        style="text-decoration: none; color:inherit; font-size:12px" >
-        &#x270F; edit
-    </a>
-</button>
-            </div>
-</div>
-</div>
-</div>
-<script>src="/Views/js/bootstrap.bundle.js"</script>
+        </div>
+    </div>
+
 <script>
     function confirmDelete() {
         return confirm("Are you sure you want to delete this article?");
     }
 </script>
-
+<script src="/Views/js/bootstrap.bundle.js"></script>
 </body>
 </html>
 

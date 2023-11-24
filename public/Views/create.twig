@@ -6,34 +6,44 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Create</title>
+    <link rel="stylesheet" href="/Views/css/bootstrap.css"/>
 </head>
 
 <body>
-
+{%include "header.twig" %}
+<div class="container mt-5">
+    <div class="row">
 <form action="/article/create" method="POST" onsubmit="return validateForm()" enctype="multipart/form-data">
     <div class="form-group">
-        <label for="title">Title:</label>
-        <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
+        <label class="h5 row" for="title">Title:</label>
+        <input class="row" type="text"  id="title" name="title" placeholder="Enter title">
     </div>
-    <div class="form-group">
-        <label for="content">Content:</label>
+        <label class="h5 row" for="content" >Content:</label>
         <textarea
-                class="form-control"
+                class="row"
                 id="content"
                 name="content"
+                placeholder="Enter text"
                 rows="10"
-                placeholder="Enter content"
-                style="width: 1000px">
+                cols="75">
         </textarea>
-    </div>
-    <div class="form-group">
-        <label for="image">Image:</label>
-        <input type="file" class="form-control-file" id="image" name="image">
-    </div>
-    <button type="submit" class="btn btn-primary" >Submit</button>
-</form>
+<div class="container">
+    <div class="row mt-2  w-100">
 
+        <div class="col">
+        <label  class="h5" for="image">Image:</label>
+        <input type="file"  id="image" name="image" >
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary" >Submit</button>
+        </div>
+    </div>
+</div>
+
+</form>
+    </div>
+</div>
 <script>
     function validateForm() {
         let title = document.getElementById("title").value;
@@ -46,7 +56,7 @@
         return true;
     }
 </script>
-
+<script src="/Views/js/bootstrap.bundle.js"></script>
 </body>
 
 </html>

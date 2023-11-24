@@ -5,35 +5,46 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="Views/css/bootstrap.css"/>
+    <title>Edit</title>
+    <link rel="stylesheet" href="/Views/css/bootstrap.css"/>
+
 </head>
 <body>
-edit:{{ article.getTitle }}
+{%include "header.twig" %}
+<div class="container mt-5 w-50">
+<h3>edit:{{ article.getTitle }}</h3>
 <br>
 <form action="/article/{{ article.getId() }}/edit" method="POST" >
     <div class="form-group">
-        <label for="title">Title:</label>
+        <label class="h5" for="title">Title:</label>
+        <div class="row w-25">
         <input type="text" class="form-control" id="title" name="title" value={{ article.getTitle }}>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="content">Content:</label>
+    <div class="row">
+        <label class="h5" for="content">Content:</label>
         <textarea
                 class="form-control"
                 id="content"
                 name="content"
                 rows="10"
-
                 style="width: 1000px">
             {{ article.getDescription }}
         </textarea>
     </div>
-    <div class="form-group">
+    <div class="row justify-content-between">
+        <div class="col">
         <label for="image">Image:</label>
         <input type="file" class="form-control-file" id="image" name="image">
-    </div>
+        </div>
+
+    <div class="col text-end">
     <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    </div>
 </form>
-<script  src="Views/js/bootstrap.bundle.js"></script>
+</div>
+
+<script  src="/Views/js/bootstrap.bundle.js"></script>
 </body>
 </html>
