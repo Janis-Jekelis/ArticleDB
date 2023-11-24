@@ -5,19 +5,33 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Articles</title>
+    <link rel="stylesheet" href="/Views/css/bootstrap.css"/>
 </head>
-<body>
 
-{% for article in articles %}
-    <img src="{{article.getpicture  }}">
-<a href="/article/{{ article.getId()}}">{{ article.getTitle() }} <br>{{ article.getDescription() }} </a>
-       <br>
-    {{ article.getCreatedAt()}}
-    {{ article.getEditedAt}}
-    <br>
-{% endfor %}
+<body class="bg-body-secondary">
 
+<div class="row ms-5 mt-5 me-5 ">
+    {% for article in articles %}
+        <div class="col col-2 ">
+            <div class="card text-bg-primary mb-3">
 
+                <a href="/article/{{ article.getId() }}" style="color: inherit; text-decoration: none">
+                    <img class="card-img-top" src="{{ article.getpicture }}" alt="image">
+                    <br>
+                    <h5 class="card-title text-center">{{ article.getTitle() }}</h5>
+                </a>
+                <div class="card-footer">
+                    <small>Created at: {{ article.getCreatedAt() }}</small>
+                    <br>
+                    {% if article.getEditedAt!=null %}
+                        <small>Edited at: {{ article.getEditedAt }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<script src="/Views/js/bootstrap.bundle.js"></script>
 </body>
 </html>
