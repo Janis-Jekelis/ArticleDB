@@ -2,7 +2,7 @@
 return [
     'dbname' => 'ArticleDB',
     'user' => 'root',
-    'password' => 'pass',
+    'password' => '',
     'host' => 'localhost',
     'driver' => 'pdo_mysql',
 ];
