@@ -6,6 +6,8 @@ namespace App\Controllers;
 use App\Models\Article;
 use App\RedirectResponse;
 use App\Response;
+use App\Services\IndexArticleService;
+use App\Services\ShowArticleService;
 use App\ViewResponse;
 use Carbon\Carbon;
 use Doctrine\DBAL\DriverManager;
@@ -21,6 +23,7 @@ class ArticleController
 
     public function index(): Response
     {
+        /*
         $articles = [];
         $statement = $this->conn->prepare("select * from Articles");
         $result = $statement->executeQuery();
@@ -35,28 +38,16 @@ class ArticleController
                 base64_encode($article["Picture"]),
                 $article["Edited_at"]
             );
-        }
+        }*/
+        $articles = (new IndexArticleService())->handle();
         return new ViewResponse("index", ["articles" => $articles]);
 
     }
 
-    public function show(int $articleId): Response
+    public function show(int $id): Response
     {
-        $statement = $this->conn->prepare("select * from Articles WHERE id = :id");
-        $statement->bindValue('id', $articleId);
-        $result = $statement->executeQuery();
-        $posts = $result->fetchAssociative();
-        $article = new Article(
-            $posts["Title"],
-            $posts["Description"],
-            Carbon::parse($posts["Created_at"]),
-            (int)$posts["id"],
-            base64_encode($posts["Picture"]),
-            $posts["Edited_at"]
-        );
-
+        $article = (new ShowArticleService())->handle($id);
         return (new ViewResponse("show", ["article" => $article]));
-
     }
 
     public function create(): Response
@@ -66,12 +57,10 @@ class ArticleController
 
     public function store(): Response
     {
-        var_dump($_FILES["image"]);
         $article = new Article(
             $_POST['title'],
             $_POST['content'],
-            (Carbon::now()),
-
+            (string)(Carbon::now()),
 
 
         );
@@ -82,13 +71,13 @@ class ArticleController
                 'Title' => ':title',
                 'Description' => ':description',
                 'Created_at' => ':created',
-                'Picture'=> ':picture'
+                'Picture' => ':picture'
             ])
             ->setParameters([
                 'title' => $article->getTitle(),
                 'description' => $article->getDescription(),
                 'created' => $article->getCreatedAt(),
-                'picture'=>file_get_contents($_FILES['image']['tmp_name'])
+                'picture' => file_get_contents($_FILES['image']['tmp_name'])
             ])
             ->executeQuery();
         $article->setId((int)$this->conn->lastInsertId());

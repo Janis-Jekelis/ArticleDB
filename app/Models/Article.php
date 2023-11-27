@@ -17,16 +17,18 @@ class Article
     public function __construct(
         string  $title,
         string  $description,
-        Carbon  $createdAt,
+        ?string $createdAt,
         ?int    $id = null,
         ?string $picture = null,
         ?string $editedAt=null
     )
     {
+       /// if($picture!=null)
         $this->title = $title;
         $this->description = $description;
-        $this->createdAt = $createdAt;
-        $this->picture = $picture==null ? "https://random.imagecdn.app/300/300": "data:image/jpeg;base64,{$picture} ";
+        $this->createdAt = $createdAt==null? Carbon::now():Carbon::parse($createdAt);
+        $this->picture = $picture==null ? "https://random.imagecdn.app/300/300":
+        "data:image/jpeg;base64,".base64_encode($picture);
         $this->id = $id;
         $this->editedAt = $editedAt==null ? null : Carbon::parse($editedAt);
     }
