@@ -6,6 +6,7 @@ namespace App\Controllers;
 use App\Models\Article;
 use App\RedirectResponse;
 use App\Response;
+use App\Services\DeleteArticleService;
 use App\Services\IndexArticleService;
 use App\Services\ShowArticleService;
 use App\ViewResponse;
@@ -125,7 +126,7 @@ class ArticleController
 
     public function delete(int $id): RedirectResponse
     {
-        $this->conn->delete('Articles', ['id' => $id]);
+        (new DeleteArticleService())->handle($id);
         return new RedirectResponse("/");
     }
 }

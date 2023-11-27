@@ -27,13 +27,13 @@ class MySqlArticleDatabase implements Repository
 
     public function getAll(): ArticleCollection
     {
-        $articleCollection= new ArticleCollection();
-        $articles=$this->database->createQueryBuilder()
+        $articleCollection = new ArticleCollection();
+        $articles = $this->database->createQueryBuilder()
             ->select('*')
             ->from('Articles')
             ->executeQuery()
             ->fetchAllAssociative();
-        foreach ($articles as $article){
+        foreach ($articles as $article) {
             $articleCollection->add($this->buildArticle($article));
         }
         return $articleCollection;
@@ -49,6 +49,15 @@ class MySqlArticleDatabase implements Repository
             ->executeQuery()
             ->fetchAssociative();
         return $this->buildArticle($article);
+    }
+
+    public function delete(Article $article)
+    {
+        $this->database->createQueryBuilder()
+            ->delete('Articles')
+            ->where('id = :id')
+            ->setParameter('id', $article->getId())
+            ->executeQuery();
     }
 
     private function buildArticle(array $data): Article
