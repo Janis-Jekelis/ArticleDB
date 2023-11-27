@@ -95,7 +95,7 @@ class ArticleController
         $article = new Article(
             $posts["Title"],
             $posts["Description"],
-            Carbon::parse($posts["Created_at"]),
+            $posts["Created_at"],
             (int)$posts["id"]
         );
         return (new ViewResponse("edit", ["article" => $article]));
