@@ -26,8 +26,8 @@ class Article
         $this->title = $title;
         $this->description = $description;
         $this->createdAt = $createdAt == null ? Carbon::now() : Carbon::parse($createdAt);
-        $this->picture = $picture == null ? "https://random.imagecdn.app/300/300" :
-            "data:image/jpeg;base64," . base64_encode($picture);
+        $this->picture = $picture == null ? "https://random.imagecdn.app/300/300" : $picture;
+
         $this->id = $id;
         $this->editedAt = $editedAt == null ? null : Carbon::parse($editedAt);
     }
@@ -49,7 +49,11 @@ class Article
 
     public function getPicture(): string
     {
+       if ($this->picture!="https://random.imagecdn.app/300/300") {
+           return "data:image/jpeg;base64," . base64_encode($this->picture);
+       }
         return $this->picture;
+
     }
 
     public function getId(): int
@@ -65,5 +69,9 @@ class Article
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+    public function savePicture()
+    {
+        return file_get_contents($this->picture);
     }
 }

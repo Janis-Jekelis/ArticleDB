@@ -5,10 +5,12 @@ namespace App\Controllers;
 
 use App\Models\Article;
 use App\RedirectResponse;
+use App\Repositories\MySqlArticleDatabase;
 use App\Response;
 use App\Services\DeleteArticleService;
 use App\Services\IndexArticleService;
 use App\Services\ShowArticleService;
+use App\Services\StoreArticleService;
 use App\ViewResponse;
 use Carbon\Carbon;
 use Doctrine\DBAL\DriverManager;
@@ -24,22 +26,6 @@ class ArticleController
 
     public function index(): Response
     {
-        /*
-        $articles = [];
-        $statement = $this->conn->prepare("select * from Articles");
-        $result = $statement->executeQuery();
-        $posts = $result->fetchAllAssociative();
-
-        foreach ($posts as $article) {
-            $articles[] = new Article(
-                $article["Title"],
-                $article["Description"],
-                Carbon::parse($article["Created_at"]),
-                (int)$article["id"],
-                base64_encode($article["Picture"]),
-                $article["Edited_at"]
-            );
-        }*/
         $articles = (new IndexArticleService())->handle();
         return new ViewResponse("index", ["articles" => $articles]);
 
@@ -58,47 +44,18 @@ class ArticleController
 
     public function store(): Response
     {
-        $article = new Article(
+        $article = (new StoreArticleService())->handle(
             $_POST['title'],
             $_POST['content'],
-            (string)(Carbon::now()),
-
-
+            $_FILES['image']['tmp_name']
         );
-        $queryBuilder = $this->conn->createQueryBuilder();
-        $queryBuilder
-            ->insert('Articles')
-            ->values([
-                'Title' => ':title',
-                'Description' => ':description',
-                'Created_at' => ':created',
-                'Picture' => ':picture'
-            ])
-            ->setParameters([
-                'title' => $article->getTitle(),
-                'description' => $article->getDescription(),
-                'created' => $article->getCreatedAt(),
-                'picture' => file_get_contents($_FILES['image']['tmp_name'])
-            ])
-            ->executeQuery();
-        $article->setId((int)$this->conn->lastInsertId());
         $_SESSION["flush"] = "Article created";
-
-        return new RedirectResponse("/article/{$article->getId()}");
+        return new RedirectResponse("/article/$article");
     }
 
-    public function edit($articleId): Response
+    public function edit(int $id): Response
     {
-        $statement = $this->conn->prepare("select * from Articles WHERE id = :id");
-        $statement->bindValue('id', $articleId);
-        $result = $statement->executeQuery();
-        $posts = $result->fetchAssociative();
-        $article = new Article(
-            $posts["Title"],
-            $posts["Description"],
-            $posts["Created_at"],
-            (int)$posts["id"]
-        );
+        $article = (new ShowArticleService())->handle($id);
         return (new ViewResponse("edit", ["article" => $article]));
     }
 

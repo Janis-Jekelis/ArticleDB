@@ -22,7 +22,6 @@ class MySqlArticleDatabase implements Repository
         } catch (ConnectionException $e) {
             throw new Exception ("Cant connect to database");
         }
-
     }
 
     public function getAll(): ArticleCollection
@@ -51,6 +50,25 @@ class MySqlArticleDatabase implements Repository
         return $this->buildArticle($article);
     }
 
+    public function save(Article $article)
+    {
+        $this->database->createQueryBuilder()
+            ->insert('Articles')
+            ->values([
+                'Title' => ':title',
+                'Description' => ':description',
+                'Created_at' => ':created',
+                'Picture' => ':picture'
+            ])
+            ->setParameters([
+                'title' => $article->getTitle(),
+                'description' => $article->getDescription(),
+                'created' => $article->getCreatedAt(),
+                'picture' => $article->savePicture()
+            ])
+            ->executeQuery();
+    }
+
     public function delete(Article $article)
     {
         $this->database->createQueryBuilder()
@@ -70,6 +88,10 @@ class MySqlArticleDatabase implements Repository
             $data['Picture'],
             $data['Edited_at']
         );
+    }
+    public function connect():Connection
+    {
+        return $this->database;
     }
 }
 
