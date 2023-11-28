@@ -17,11 +17,7 @@ class MySqlArticleDatabase implements Repository
 
     public function __construct()
     {
-        try {
-            $this->database = DriverManager::getConnection(require __DIR__ . "/../../dbalConfig.php");
-        } catch (ConnectionException $e) {
-            throw new Exception ("Cant connect to database");
-        }
+        $this->database = DriverManager::getConnection(require __DIR__ . "/../../dbalConfig.php");
     }
 
     public function getAll(): ArticleCollection
@@ -56,21 +52,7 @@ class MySqlArticleDatabase implements Repository
             $this->update($article);
             return;
         }
-        $this->database->createQueryBuilder()
-            ->insert('Articles')
-            ->values([
-                'Title' => ':title',
-                'Description' => ':description',
-                'Created_at' => ':created',
-                'Picture' => ':picture'
-            ])
-            ->setParameters([
-                'title' => $article->getTitle(),
-                'description' => $article->getDescription(),
-                'created' => $article->getCreatedAt(),
-                'picture' => $article->savePicture()
-            ])
-            ->executeQuery();
+        $this->insert($article);
     }
 
     public function delete(Article $article)
@@ -119,9 +101,23 @@ class MySqlArticleDatabase implements Repository
 
     }
 
-    private function insert(): void
+    private function insert(Article $article): void
     {
-
+        $this->database->createQueryBuilder()
+            ->insert('Articles')
+            ->values([
+                'Title' => ':title',
+                'Description' => ':description',
+                'Created_at' => ':created',
+                'Picture' => ':picture'
+            ])
+            ->setParameters([
+                'title' => $article->getTitle(),
+                'description' => $article->getDescription(),
+                'created' => $article->getCreatedAt(),
+                'picture' => $article->savePicture()
+            ])
+            ->executeQuery();
     }
 }
 
