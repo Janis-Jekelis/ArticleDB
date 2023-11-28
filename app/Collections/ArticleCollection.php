@@ -1,25 +1,29 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Collections;
 
 use App\Models\Article;
 
 class ArticleCollection
 {
-    private array $articles=[];
-    public function __construct(array $articles=[])
+    private array $articles = [];
+
+    public function __construct(array $articles = [])
     {
-        foreach ($articles as $article){
-            if (! $article instanceof Article)continue;
+        foreach ($articles as $article) {
+            if (!$article instanceof Article) continue;
             $this->add($article);
         }
     }
-    public function getAll():array
+
+    public function getAll(): array
     {
         return $this->articles;
     }
-    public function add(Article $article):void
+
+    public function add(Article $article): void
     {
-        $this->articles[]=$article;
+        $this->articles[] = $article;
     }
 }

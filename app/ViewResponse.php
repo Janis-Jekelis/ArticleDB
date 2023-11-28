@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace App;
 
 class ViewResponse implements Response
@@ -7,7 +8,7 @@ class ViewResponse implements Response
     private string $viewName;
     private array $data;
 
-    public function __construct(string $viewName, array $data=[])
+    public function __construct(string $viewName, array $data = [])
     {
         $this->viewName = $viewName;
         $this->data = $data;

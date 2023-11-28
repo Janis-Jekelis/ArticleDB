@@ -50,9 +50,9 @@ class MySqlArticleDatabase implements Repository
         return $this->buildArticle($article);
     }
 
-    public function save(Article $article):void
+    public function save(Article $article): void
     {
-        if($article->getId()!=null){
+        if ($article->getId() != null) {
             $this->update($article);
             return;
         }
@@ -93,30 +93,33 @@ class MySqlArticleDatabase implements Repository
             $data['Edited_at']
         );
     }
-    public function connect():Connection
+
+    public function connect(): Connection
     {
         return $this->database;
     }
-    private function update(Article $article):void
+
+    private function update(Article $article): void
     {
         $this->database->createQueryBuilder()
-           ->update('Articles')
-           ->set('Title', ':title')
-           ->set('Description', ':description')
-           ->set('Edited_at', ':edited')
-            ->set('Picture',':picture')
-           ->where('id = :id')
-           ->setParameters([
-               'title' => $article->getTitle(),
-               'description' => $article->getDescription(),
-               'id' => $article->getId(),
-               'picture'=>$article->savePicture(),
-               'edited' => $article->getEditedAt()
-           ])
-           ->executeQuery();
+            ->update('Articles')
+            ->set('Title', ':title')
+            ->set('Description', ':description')
+            ->set('Edited_at', ':edited')
+            ->set('Picture', ':picture')
+            ->where('id = :id')
+            ->setParameters([
+                'title' => $article->getTitle(),
+                'description' => $article->getDescription(),
+                'id' => $article->getId(),
+                'picture' => $article->savePicture(),
+                'edited' => $article->getEditedAt()
+            ])
+            ->executeQuery();
 
     }
-    private function insert():void
+
+    private function insert(): void
     {
 
     }

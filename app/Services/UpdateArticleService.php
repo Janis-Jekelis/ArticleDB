@@ -16,21 +16,20 @@ class UpdateArticleService
     }
 
     public function handle(
-        int $id,
-        string $title,
-        string $description,
-        ?string $picture=null
+        int     $id,
+        string  $title,
+        string  $description,
+        ?string $picture = null
     )
     {
 
-        $article=$this->repository->getById($id);
+        $article = $this->repository->getById($id);
         $article->update([
-            'Title'=>$title,
-            'Description'=>$description,
-            'Picture'=>$picture
+            'Title' => $title,
+            'Description' => $description,
+            'Picture' => $picture
         ]);
         $this->repository->save($article);
-
 
 
     }

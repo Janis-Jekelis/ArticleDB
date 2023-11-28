@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
+
 use App\RedirectResponse;
 use App\ViewResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+
 session_start();
 $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
-if(isset($_SESSION["flush"]))$twig->addGlobal("flush",["success"=>$_SESSION["flush"]]);
+if (isset($_SESSION["flush"])) $twig->addGlobal("flush", ["success" => $_SESSION["flush"]]);
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
     $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "store"]);
@@ -49,13 +51,13 @@ switch ($routeInfo[0]) {
         }
         $response = (new $class)->{$method}(...array_values($intVars));
 
-        switch (true){
+        switch (true) {
             case $response instanceof ViewResponse:
                 echo $twig->render($response->getViewName() . ".twig", $response->getData());
                 break;
-                case $response instanceof RedirectResponse:
-                    header("Location: {$response->getLocation()}");
+            case $response instanceof RedirectResponse:
+                header("Location: {$response->getLocation()}");
         }
-        if($method=="show" && isset($_SESSION["flush"]))unset($_SESSION["flush"]);
+        if ($method == "show" && isset($_SESSION["flush"])) unset($_SESSION["flush"]);
         break;
 }

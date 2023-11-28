@@ -73,7 +73,7 @@ class Article
 
     public function savePicture(): string
     {
-        if(strlen($this->picture)<100){
+        if (strlen($this->picture) < 100) {
             return file_get_contents($this->picture);
         }
         return $this->picture;
