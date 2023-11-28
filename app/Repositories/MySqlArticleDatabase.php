@@ -50,8 +50,12 @@ class MySqlArticleDatabase implements Repository
         return $this->buildArticle($article);
     }
 
-    public function save(Article $article)
+    public function save(Article $article):void
     {
+        if($article->getId()){
+            $this->update($article);
+            return;
+        }
         $this->database->createQueryBuilder()
             ->insert('Articles')
             ->values([
@@ -92,6 +96,28 @@ class MySqlArticleDatabase implements Repository
     public function connect():Connection
     {
         return $this->database;
+    }
+    private function update(Article $article):void
+    {
+        $this->database->createQueryBuilder()
+           ->update('Articles')
+           ->set('Title', ':title')
+           ->set('Description', ':description')
+           ->set('Edited_at', ':edited')
+            ->set('Picture',':picture')
+           ->where('id = :id')
+           ->setParameters([
+               'title' => $article->getTitle(),
+               'description' => $article->getDescription(),
+               'id' => $article->getId(),
+               'picture'=>$article->savePicture(),
+               'edited' => $article->getEditedAt()
+           ])
+           ->executeQuery();
+    }
+    private function insert():void
+    {
+
     }
 }
 

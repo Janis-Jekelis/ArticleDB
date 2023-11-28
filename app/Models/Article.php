@@ -49,9 +49,9 @@ class Article
 
     public function getPicture(): string
     {
-       if ($this->picture!="https://random.imagecdn.app/300/300") {
-           return "data:image/jpeg;base64," . base64_encode($this->picture);
-       }
+        if ($this->picture != "https://random.imagecdn.app/300/300") {
+            return "data:image/jpeg;base64," . base64_encode($this->picture);
+        }
         return $this->picture;
 
     }
@@ -70,8 +70,22 @@ class Article
     {
         $this->id = $id;
     }
+
     public function savePicture()
     {
-        return file_get_contents($this->picture);
+        if($this->picture!="https://random.imagecdn.app/300/300" || $this->picture!=null ){
+            var_dump($this->picture);die;
+            return file_get_contents($this->picture);
+
+        }
+
+    }
+
+    public function update(array $data): void
+    {
+        $this->title = $data['Title'] ?? $this->title;
+        $this->description = $data['Description'] ?? $this->description;
+        $this->picture = $data['Picture']==null? $this->picture : file_get_contents($data['Picture']);
+        $this->editedAt=Carbon::now();
     }
 }

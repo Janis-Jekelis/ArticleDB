@@ -11,6 +11,7 @@ use App\Services\DeleteArticleService;
 use App\Services\IndexArticleService;
 use App\Services\ShowArticleService;
 use App\Services\StoreArticleService;
+use App\Services\UpdateArticleService;
 use App\ViewResponse;
 use Carbon\Carbon;
 use Doctrine\DBAL\DriverManager;
@@ -61,7 +62,7 @@ class ArticleController
 
     public function update(int $id): Response
     {
-        $queryBuilder = $this->conn->createQueryBuilder();
+       /* $queryBuilder = $this->conn->createQueryBuilder();
         $queryBuilder
             ->update('Articles')
             ->set('Title', ':title')
@@ -75,8 +76,13 @@ class ArticleController
                 'id' => $id,
                 'edited' => Carbon::now()
             ])
-            ->executeQuery();
-
+            ->executeQuery();*/
+        (new UpdateArticleService())->handle(
+            $id,
+            $_POST['title'],
+            $_POST['content'],
+            $_FILES['image']['tmp_name']
+        );
         return new RedirectResponse("/");
 
     }
