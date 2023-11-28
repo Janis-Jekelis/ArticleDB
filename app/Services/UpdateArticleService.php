@@ -17,11 +17,12 @@ class UpdateArticleService
 
     public function handle(
         int $id,
-        ?string $title=null,
-        ?string $description=null,
+        string $title,
+        string $description,
         ?string $picture=null
     )
     {
+
         $article=$this->repository->getById($id);
         $article->update([
             'Title'=>$title,

@@ -22,7 +22,6 @@ class StoreArticleService
         string $picture
     ): int
     {
-
         $article=new Article(
             $title,
             $description,

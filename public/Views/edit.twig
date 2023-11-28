@@ -14,7 +14,7 @@
 <div class="container mt-5 w-50">
 <h3>edit:{{ article.getTitle }}</h3>
 <br>
-<form action="/article/{{ article.getId() }}/edit" method="POST" >
+<form action="/article/{{ article.getId() }}/edit" method="POST" onsubmit="return validateForm()" enctype="multipart/form-data" >
     <div class="form-group">
         <label class="h5" for="title">Title:</label>
         <div class="row w-25">
@@ -44,7 +44,18 @@
     </div>
 </form>
 </div>
+<script>
+    function validateForm() {
+        let title = document.getElementById("title").value;
+        let content = document.getElementById("content").value;
+        if (title.trim() === "" || content.trim() === "") {
+            alert("Title and content are required fields.");
+            return false;
+        }
 
+        return true;
+    }
+</script>
 <script  src="/Views/js/bootstrap.bundle.js"></script>
 </body>
 </html>

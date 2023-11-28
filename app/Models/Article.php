@@ -56,7 +56,7 @@ class Article
 
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -71,21 +71,20 @@ class Article
         $this->id = $id;
     }
 
-    public function savePicture()
+    public function savePicture(): string
     {
-        if($this->picture!="https://random.imagecdn.app/300/300" || $this->picture!=null ){
-            var_dump($this->picture);die;
+        if(strlen($this->picture)<100){
             return file_get_contents($this->picture);
-
         }
-
+        return $this->picture;
     }
 
     public function update(array $data): void
     {
         $this->title = $data['Title'] ?? $this->title;
         $this->description = $data['Description'] ?? $this->description;
-        $this->picture = $data['Picture']==null? $this->picture : file_get_contents($data['Picture']);
-        $this->editedAt=Carbon::now();
+        $this->picture = $data['Picture'] == null ? $this->picture : $data['Picture'];
+        $this->editedAt = Carbon::now();
     }
+
 }

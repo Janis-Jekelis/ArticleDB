@@ -52,7 +52,7 @@ class MySqlArticleDatabase implements Repository
 
     public function save(Article $article):void
     {
-        if($article->getId()){
+        if($article->getId()!=null){
             $this->update($article);
             return;
         }
@@ -114,6 +114,7 @@ class MySqlArticleDatabase implements Repository
                'edited' => $article->getEditedAt()
            ])
            ->executeQuery();
+
     }
     private function insert():void
     {
