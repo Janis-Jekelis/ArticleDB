@@ -12,19 +12,32 @@ class Test implements Repository
 {
     private Connection $database;
 
-    public function __construct()
+    public function __construct(Connection $connection)
     {
-        $this->database = DriverManager::getConnection(require __DIR__ . "/../../dbalConfig.php");
+        $this->database = $connection;
     }
 
     public function getAll(): ArticleCollection
     {
-        return new ArticleCollection(
+        $title = $this->database->createQueryBuilder()
+            ->select('Title')
+            ->from('Articles')
+            ->where('id=:id')
+            ->setParameter('id', 193)
+            ->executeQuery()
+            ->fetchOne();
+        $article = new Article(
+            $title,
+            " "
+        );
+        $artcol = new ArticleCollection(
             [
                 new Article("Title", "Description",),
                 new Article("Title2", "Description",),
                 new Article("Title3", "Description",)
             ]
         );
+        $artcol->add($article);
+        return $artcol;
     }
 }

@@ -39,13 +39,12 @@ class ArticleController
     {
         $articles = $this->indexArticleService->handle();
         return new ViewResponse("index", ["articles" => $articles]);
-
     }
 
     public function show(int $id): Response
     {
         $article = $this->showArticleService->handle($id);
-        return (new ViewResponse("show", ["article" => $article]));
+        return new ViewResponse("show", ["article" => $article]);
     }
 
     public function create(): Response

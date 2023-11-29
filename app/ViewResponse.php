@@ -23,4 +23,20 @@ class ViewResponse implements Response
     {
         return $this->data;
     }
+
+    /**
+     * @param string $viewName
+     */
+    public function setViewName(string $viewName): void
+    {
+        $this->viewName = $viewName;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data): void
+    {
+        $this->data = $data;
+    }
 }

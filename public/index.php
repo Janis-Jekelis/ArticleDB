@@ -5,6 +5,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use App\RedirectResponse;
 use App\Repositories\Test;
 use App\ViewResponse;
+use Doctrine\DBAL\DriverManager;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Repositories\MySqlArticleDatabase;
@@ -15,14 +16,14 @@ $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
 if (isset($_SESSION["flush"])) $twig->addGlobal("flush", ["success" => $_SESSION["flush"]]);
 
-
 $container = new \DI\Container();
 $builder = new \DI\ContainerBuilder();
 $builder->addDefinitions([
-    Repository::class => DI\create(MySqlArticleDatabase::class)
+    Repository::class => DI\create(MySqlArticleDatabase::class),
+    \App\Response::class => DI\create(ViewResponse::class)
+
 ]);
 $container = $builder->build();
-
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
@@ -64,8 +65,11 @@ switch ($routeInfo[0]) {
         foreach ($vars as $key => $value) {
             $intVars[$key] = (int)$value;
         }
-        if(strpos($_SERVER["REQUEST_URI"],"test")){
-            $container->set(Repository::class,DI\create(Test::class));
+        if (strpos($_SERVER["REQUEST_URI"], "test")) {
+            $container->set(Repository::class, DI\create(Test::class));
+            $container->set(Repository::class, function () {
+                return new Test(DriverManager::getConnection(require __DIR__ . "/../dbalConfig.php"));
+            });
         }
 
         $response = ($container->get($class))->{$method}(...array_values($intVars));
