@@ -35,7 +35,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
     $r->addRoute('POST', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "update"]);
 
-    $r->addRoute('GET', "/test", ["App\Controllers\ArticleController", "getAllTest"]);
+    $r->addRoute('GET', "/test", ["App\Controllers\ArticleController", "index"]);
 
 });
 
@@ -64,9 +64,10 @@ switch ($routeInfo[0]) {
         foreach ($vars as $key => $value) {
             $intVars[$key] = (int)$value;
         }
-        if($method=="getAllTest"){
+        if(strpos($_SERVER["REQUEST_URI"],"test")){
             $container->set(Repository::class,DI\create(Test::class));
         }
+
         $response = ($container->get($class))->{$method}(...array_values($intVars));
 
         switch (true) {
