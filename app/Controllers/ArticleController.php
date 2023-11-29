@@ -14,17 +14,37 @@ use App\ViewResponse;
 
 class ArticleController
 {
+    private IndexArticleService $indexArticleService;
+    private DeleteArticleService $deleteArticleService;
+    private ShowArticleService $showArticleService;
+    private StoreArticleService $storeArticleService;
+    private UpdateArticleService $updateArticleService;
+
+    public function __construct(
+        DeleteArticleService $deleteArticleService,
+        IndexArticleService  $indexArticleService,
+        ShowArticleService   $showArticleService,
+        StoreArticleService  $storeArticleService,
+        UpdateArticleService $updateArticleService
+    )
+    {
+        $this->indexArticleService = $indexArticleService;
+        $this->deleteArticleService = $deleteArticleService;
+        $this->showArticleService = $showArticleService;
+        $this->storeArticleService = $storeArticleService;
+        $this->updateArticleService = $updateArticleService;
+    }
 
     public function index(): Response
     {
-        $articles = (new IndexArticleService())->handle();
+        $articles = $this->indexArticleService->handle();
         return new ViewResponse("index", ["articles" => $articles]);
 
     }
 
     public function show(int $id): Response
     {
-        $article = (new ShowArticleService())->handle($id);
+        $article = $this->showArticleService->handle($id);
         return (new ViewResponse("show", ["article" => $article]));
     }
 
@@ -35,7 +55,7 @@ class ArticleController
 
     public function store(): Response
     {
-        $article = (new StoreArticleService())->handle(
+        $article = $this->storeArticleService->handle(
             $_POST['title'],
             $_POST['content'],
             $_FILES['image']['tmp_name']
@@ -46,14 +66,14 @@ class ArticleController
 
     public function edit(int $id): Response
     {
-        $article = (new ShowArticleService())->handle($id);
+        $article = $this->showArticleService->handle($id);
         return (new ViewResponse("edit", ["article" => $article]));
     }
 
     public function update(int $id): Response
     {
 
-        (new UpdateArticleService())->handle(
+        $this->updateArticleService->handle(
             $id,
             $_POST['title'],
             $_POST['content'],
@@ -65,7 +85,7 @@ class ArticleController
 
     public function delete(int $id): RedirectResponse
     {
-        (new DeleteArticleService())->handle($id);
+        $this->deleteArticleService->handle($id);
         return new RedirectResponse("/");
     }
 }

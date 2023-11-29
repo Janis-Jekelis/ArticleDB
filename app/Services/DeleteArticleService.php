@@ -10,9 +10,9 @@ class DeleteArticleService
 {
     private Repository $repository;
 
-    public function __construct()
+    public function __construct(Repository $repository)
     {
-        $this->repository = new MySqlArticleDatabase();
+        $this->repository = $repository;
     }
 
     public function handle(int $id)

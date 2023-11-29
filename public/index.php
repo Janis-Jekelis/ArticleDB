@@ -6,11 +6,23 @@ use App\RedirectResponse;
 use App\ViewResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use App\Repositories\MySqlArticleDatabase;
+use App\Repositories\Repository;
 
 session_start();
 $loader = new FilesystemLoader(__DIR__ . "/../public/Views");
 $twig = new Environment($loader);
 if (isset($_SESSION["flush"])) $twig->addGlobal("flush", ["success" => $_SESSION["flush"]]);
+
+
+$container = new \DI\Container();
+$builder = new \DI\ContainerBuilder();
+$builder->addDefinitions([
+    Repository::class => DI\create(MySqlArticleDatabase::class)
+]);
+$container = $builder->build();
+//$container->set(Repository::class,DI\create(MySqlArticleDatabase::class));
+
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
     $r->addRoute('POST', '/article/create', ["App\Controllers\ArticleController", "store"]);
@@ -49,7 +61,7 @@ switch ($routeInfo[0]) {
         foreach ($vars as $key => $value) {
             $intVars[$key] = (int)$value;
         }
-        $response = (new $class)->{$method}(...array_values($intVars));
+        $response = ($container->get($class))->{$method}(...array_values($intVars));
 
         switch (true) {
             case $response instanceof ViewResponse:
