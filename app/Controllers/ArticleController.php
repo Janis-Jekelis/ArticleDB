@@ -88,4 +88,10 @@ class ArticleController
         $this->deleteArticleService->handle($id);
         return new RedirectResponse("/");
     }
+    public function getAllTest()
+    {
+        $articles = $this->indexArticleService->handle();
+        return new ViewResponse("index", ["articles" => $articles]);
+    }
+
 }

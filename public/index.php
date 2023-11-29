@@ -3,6 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use App\RedirectResponse;
+use App\Repositories\Test;
 use App\ViewResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -21,7 +22,7 @@ $builder->addDefinitions([
     Repository::class => DI\create(MySqlArticleDatabase::class)
 ]);
 $container = $builder->build();
-//$container->set(Repository::class,DI\create(MySqlArticleDatabase::class));
+
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/article/create', ["App\Controllers\ArticleController", "create"]);
@@ -33,6 +34,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/article/{id:\d+}/delete', ["App\Controllers\ArticleController", "delete"]);
     $r->addRoute('GET', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "edit"]);
     $r->addRoute('POST', '/article/{id:\d+}/edit', ["App\Controllers\ArticleController", "update"]);
+
+    $r->addRoute('GET', "/test", ["App\Controllers\ArticleController", "getAllTest"]);
 
 });
 
@@ -60,6 +63,9 @@ switch ($routeInfo[0]) {
         $intVars = [];
         foreach ($vars as $key => $value) {
             $intVars[$key] = (int)$value;
+        }
+        if($method=="getAllTest"){
+            $container->set(Repository::class,DI\create(Test::class));
         }
         $response = ($container->get($class))->{$method}(...array_values($intVars));
 

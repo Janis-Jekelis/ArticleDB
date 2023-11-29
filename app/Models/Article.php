@@ -17,7 +17,7 @@ class Article
     public function __construct(
         string  $title,
         string  $description,
-        ?string $createdAt,
+        ?string $createdAt=null,
         ?int    $id = null,
         ?string $picture = null,
         ?string $editedAt = null
